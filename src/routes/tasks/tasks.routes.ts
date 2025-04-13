@@ -12,7 +12,7 @@ const tags: string[] = ['Tasks'];
 export const list = createRoute({
   tags,
   summary: 'List all tasks',
-  path: '/tasks',
+  path: '/',
   method: 'get',
   responses: {
     [HttpStatusCodes.OK]: jsonContent(z.array(selectTaskSchema), 'The list of tasks'),
@@ -23,7 +23,7 @@ export const list = createRoute({
 export const create = createRoute({
   tags,
   summary: 'Create a new task',
-  path: '/tasks',
+  path: '/',
   method: 'post',
   request: {
     body: jsonContentRequired(insertTaskSchema, 'The task to create'),
@@ -39,7 +39,7 @@ export const getOne = createRoute({
   tags,
   summary: 'Get a single task',
   method: 'get',
-  path: '/tasks/{id}',
+  path: '/{id}',
   request: {
     params: IdParamsSchema,
   },
@@ -54,7 +54,7 @@ export const getOne = createRoute({
 export const patch = createRoute({
   tags,
   summary: 'Update a task',
-  path: '/tasks/{id}',
+  path: '/{id}',
   method: 'patch',
   request: {
     params: IdParamsSchema,
@@ -71,7 +71,7 @@ export const patch = createRoute({
 export const remove = createRoute({
   tags,
   summary: 'Remove a task',
-  path: '/tasks/{id}',
+  path: '/{id}',
   method: 'delete',
   request: {
     params: IdParamsSchema,

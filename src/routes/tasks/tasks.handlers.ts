@@ -4,14 +4,16 @@ import * as HttpStatusPhrases from 'stoker/http-status-phrases';
 
 import type { AppRouteHandler } from '@/types';
 
-import db from '@/db';
+import { createDb } from '@/db';
 import { tasks } from '@/db/schema';
 import { ZOD_ERROR_CODES, ZOD_ERROR_MESSAGES } from '@/lib/constants';
 
-import type { CreateRoute, ListRoute, GetOneRoute, PatchRoute, RemoveRoute } from './tasks.routes';
+import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './tasks.routes';
 
 // List tasks route handler
 export const list: AppRouteHandler<ListRoute> = async (c) => {
+  const { db } = createDb(c.env);
+
   const tasks = await db.query.tasks.findMany();
 
   return c.json(tasks);
@@ -21,6 +23,8 @@ export const list: AppRouteHandler<ListRoute> = async (c) => {
 export const create: AppRouteHandler<CreateRoute> = async (c) => {
   const task = c.req.valid('json');
 
+  const { db } = createDb(c.env);
+
   const [inserted] = await db.insert(tasks).values(task).returning();
 
   return c.json(inserted, HttpStatusCodes.CREATED);
@@ -29,6 +33,8 @@ export const create: AppRouteHandler<CreateRoute> = async (c) => {
 // Get single task route handler
 export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
   const { id } = c.req.valid('param');
+
+  const { db } = createDb(c.env);
 
   const task = await db.query.tasks.findFirst({
     where(fields, operators) {
@@ -45,6 +51,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c) => {
 export const patch: AppRouteHandler<PatchRoute> = async (c) => {
   const { id } = c.req.valid('param');
   const updates = c.req.valid('json');
+
+  const { db } = createDb(c.env);
 
   // Checs at least one field is present in the request body
   if (Object.keys(updates).length === 0) {
@@ -83,6 +91,8 @@ export const patch: AppRouteHandler<PatchRoute> = async (c) => {
 // Remove task route handler
 export const remove: AppRouteHandler<RemoveRoute> = async (c) => {
   const { id } = c.req.valid('param');
+
+  const { db } = createDb(c.env);
 
   const result = await db.delete(tasks).where(eq(tasks.id, id));
 

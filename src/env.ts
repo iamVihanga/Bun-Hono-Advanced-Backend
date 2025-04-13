@@ -1,5 +1,3 @@
-import type { ZodError } from 'zod';
-
 import { z } from 'zod';
 
 const envSchema = z
@@ -22,17 +20,18 @@ const envSchema = z
     }
   });
 
-export type EnvSchema = z.infer<typeof envSchema>;
+export type Environment = z.infer<typeof envSchema>;
 
-let env: EnvSchema;
+export function parseEnv(data: any) {
+  const { data: env, error } = envSchema.safeParse(data);
 
-try {
-  env = envSchema.parse(process.env);
-} catch (e) {
-  const error = e as ZodError;
-  console.error('❌ Invalid Env.');
-  console.error(error.flatten().fieldErrors);
-  process.exit(1);
+  if (error) {
+    const errorMessage = `❌ Invalid Env: ${Object.entries(error.flatten().fieldErrors)
+      .map(([key, errors]) => `${key}: ${errors?.join(',')}`)
+      .join(' | ')}`;
+
+    throw new Error(errorMessage);
+  }
+
+  return env;
 }
-
-export default env;

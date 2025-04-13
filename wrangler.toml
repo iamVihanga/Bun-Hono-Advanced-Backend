@@ -1,0 +1,5 @@
+name="hono-advanced-backend"
+main="src/app.ts"
+compatibility_date = "2025-04-13"
+compatibility_flags = [ "nodejs_compat" ]
+keep_vars = true
