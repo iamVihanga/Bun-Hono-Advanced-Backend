@@ -1,12 +1,12 @@
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { boolean, integer, pgTable, text } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 import { timestamps } from '@/db/column.helpers';
 
-export const tasks = sqliteTable('tasks', {
-  id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+export const tasks = pgTable('tasks', {
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
   name: text('name').notNull(),
-  done: integer('done', { mode: 'boolean' }).notNull().default(false),
+  done: boolean('done').notNull().default(false),
   ...timestamps,
 });
 
@@ -19,7 +19,6 @@ export const insertTaskSchema = createInsertSchema(tasks, {
     done: true,
   })
   .omit({
-    id: true,
     createdAt: true,
     updatedAt: true,
   });

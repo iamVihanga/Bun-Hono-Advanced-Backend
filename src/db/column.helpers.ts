@@ -1,11 +1,9 @@
 import { sql } from 'drizzle-orm';
-import { integer } from 'drizzle-orm/sqlite-core';
-
-const defaultNow = sql`(cast((julianday('now') - 2440587.5)*86400000 as integer))`;
+import { timestamp } from 'drizzle-orm/pg-core';
 
 export const timestamps = {
-  createdAt: integer('created_at', { mode: 'timestamp' }).default(defaultNow).notNull(),
-  updatedAt: integer('updated_at', { mode: 'timestamp' })
-    .default(defaultNow)
-    .$onUpdate(() => new Date()),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .$onUpdate(() => sql`CURRENT_TIMESTAMP`),
 };
